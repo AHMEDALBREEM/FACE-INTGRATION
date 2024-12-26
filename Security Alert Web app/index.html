@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Alert Web App</title>
+    <link rel="icon" href="a.ico" type="image/x-icon">
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAGS7fyVNgkaoYlXGx0J6AzokmMCcKc8J4",
+            authDomain: "aimobdes.firebaseapp.com",
+            databaseURL: "https://aimobdes-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "aimobdes",
+            storageBucket: "aimobdes.firebasestorage.app",
+            messagingSenderId: "725414085489",
+            appId: "1:725414085489:web:5365a4339d7ebffe4fecd0",
+            measurementId: "G-VGGS32NM5R"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Check the value of 'unkowen' and control the audio playback
+        async function checkUnkowen() {
+            const dbRef = ref(database, "unknown");
+            const snapshot = await get(dbRef);
+            const audio = document.getElementById("alert-audio");
+            const h1 = document.getElementById("main-button");
+
+            if (snapshot.exists()) {
+                const value = snapshot.val();
+                if (String(value).toLowerCase() === "true") {
+                    h1.textContent = "STOP";
+                    audio.play();
+                } else {
+                    h1.textContent = "Welcome to the Security Alert Web App";
+                    audio.pause();
+                    audio.currentTime = 0; // Reset audio playback
+                }
+            }
+        }
+
+        // Handle 'Stop' button click
+        async function handleStopClick() {
+            const h1 = document.getElementById("main-button");
+            const audio = document.getElementById("alert-audio");
+            if (h1.textContent === "STOP") {
+                const dbRef = ref(database, "unknown");
+                await set(dbRef, "false"); // Set the value to 'false'
+                audio.pause(); // Stop the audio
+                audio.currentTime = 0; // Reset audio playback
+            }
+        }
+
+        // Check 'unkowen' value on page load
+        window.onload = function() {
+    checkUnkowen(); // Initial check
+    setInterval(checkUnkowen, 1000); // Check every 1000 ms
+};        window.handleStopClick = handleStopClick;
+
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #4caf50, #2196f3);
+            color: #fff;
+        }
+
+        h1 {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 20px 40px;
+            border-radius: 8px;
+            text-transform: uppercase;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        h1:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        h1:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <h1 id="main-button" onclick="handleStopClick()">Welcome to the Security Alert Web App</h1>
+    <audio id="alert-audio" src="a.mp3" autoplay loop></audio>
+</body>
+</html>
+
